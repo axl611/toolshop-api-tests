@@ -1,0 +1,308 @@
+{
+  "info": {
+    "_postman_id": "57cfa166-3d6e-4820-83f1-d3487dec0154",
+    "name": "Toolshop API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "26983880"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "User login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Login successful\", () => {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "  pm.expect(response.access_token).to.be.a('string');\r",
+                  "});\r",
+                  "\r",
+                  "// Save the token to the environment\r",
+                  "pm.environment.set(\"token\", response.access_token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{adminEmail}}\",\r\n  \"password\": \"{{adminPassword}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get all products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Status code\r",
+                  "pm.test(\"Status is 200\", () => {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// 2. Response time (SLA check)\r",
+                  "pm.test(\"Response under 500ms\", () => {\r",
+                  "  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                  "});\r",
+                  "\r",
+                  "// 3. Field exists\r",
+                  "pm.test(\"Response has data array\", () => {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json.data).to.be.an('array');\r",
+                  "});\r",
+                  "\r",
+                  "// 4. Field type is correct\r",
+                  "pm.test(\"Price is a number\", () => {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json.data[0].price).to.be.a('number');\r",
+                  "});\r",
+                  "\r",
+                  "// 5. Content-Type header\r",
+                  "pm.test(\"Content-Type is JSON\", () => {\r",
+                  "  pm.expect(pm.response.headers.get('Content-Type'))\r",
+                  "    .to.include('application/json');\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now();\r",
+                  "const testEmail = `testuser_${timestamp}@example.com`;\r",
+                  "pm.environment.set(\"testEmail\", testEmail);\r",
+                  "pm.environment.set(\"testTimestamp\", timestamp);\r",
+                  "\r",
+                  "// Check if token is about to expire, re-login if needed\r",
+                  "const token = pm.environment.get(\"token\");\r",
+                  "const tokenExpiry = pm.environment.get(\"tokenExpiry\");\r",
+                  "\r",
+                  "if (!token || Date.now() > tokenExpiry) {\r",
+                  "  // Token missing or expired — force re-login\r",
+                  "  pm.environment.set(\"needsLogin\", true);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register user",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now();\r",
+                  "const testEmail = `testuser_${timestamp}@example.com`;\r",
+                  "\r",
+                  "pm.environment.set(\"testEmail\", testEmail);\r",
+                  "\r",
+                  "console.log(\"Generated test email:\", testEmail);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User registered successfully\", () => {\r",
+                  "  pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "// Sample Test Case (Postman/Chai syntax)\r",
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Verify all fields are strings and not empty\", () => {\r",
+                  "    const stringFields = ['first_name', 'last_name', 'phone', 'dob', 'email', 'id', 'created_at'];\r",
+                  "    \r",
+                  "    stringFields.forEach(field => {\r",
+                  "        pm.expect(response[field]).to.be.a('string');\r",
+                  "        pm.expect(response[field].length).to.be.above(0);\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Verify 'address' object and its children\", () => {\r",
+                  "    pm.expect(response.address).to.be.an('object');\r",
+                  "    \r",
+                  "    const addressFields = ['street', 'city', 'state', 'country', 'postal_code'];\r",
+                  "    addressFields.forEach(field => {\r",
+                  "        pm.expect(response.address[field]).to.be.a('string');\r",
+                  "        pm.expect(response.address[field].length).to.be.above(0);\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Verify 'phone' contains only digits\", () => {\r",
+                  "    // Uses regex to ensure the string only has numbers 0-9\r",
+                  "    pm.expect(response.phone).to.match(/^\\d+$/);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Verify 'created_at' contains numbers (ignoring separators)\", () => {\r",
+                  "    // Validates that there are digits present in the timestamp\r",
+                  "    const digitOnly = response.created_at.replace(/[- :]/g, \"\");\r",
+                  "    pm.expect(digitOnly).to.match(/^\\d+$/);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time under 1000ms\", () => {\r",
+                  "    const limit = parseInt(pm.environment.get(\"responseTimeLimit\"));\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(limit);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Content-Type is JSON\", () => {\r",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');\r",
+                  "});\r",
+                  "\r",
+                  "// Chain to next request\r",
+                  "pm.environment.set(\"newUserId\", response.id);\r",
+                  "pm.environment.set(\"newUserEmail\", response.email);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"first_name\": \"John\",\r\n  \"last_name\": \"Doe\",\r\n  \"address\": {\r\n    \"street\": \"Street 1\",\r\n    \"city\": \"City\",\r\n    \"state\": \"State\",\r\n    \"country\": \"Country\",\r\n    \"postal_code\": \"1234AA\"\r\n  },\r\n  \"phone\": \"0987654321\",\r\n  \"dob\": \"1970-01-01\",\r\n  \"password\": \"SuperSecure@123\",\r\n  \"email\": \"{{testEmail}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          "// Pre-request Script tab\r",
+          "const timestamp = Date.now();\r",
+          "const testEmail = `testuser_${timestamp}@example.com`;\r",
+          "pm.environment.set(\"testEmail\", testEmail);\r",
+          "pm.environment.set(\"testTimestamp\", timestamp);"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "testEmail",
+      "value": ""
+    }
+  ]
+}
