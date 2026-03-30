@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Toolshop API Tests" tests="3" time="1.621">
+  <testsuite name="Auth / User login" id="e5be84a0-df09-4850-b426-649b2c47b31b" timestamp="2026-03-30T23:00:15.525Z" tests="1" failures="0" errors="0" time="0.563">
+    <testcase name="Login successful" time="0.563" classname="AuthUserLogin"/>
+  </testsuite>
+  <testsuite name="Products / Get all products" id="6a0745b4-5552-426e-abe7-dabb3a45aa54" timestamp="2026-03-30T23:00:15.525Z" tests="5" failures="0" errors="0" time="0.435">
+    <testcase name="Status is 200" time="0.435" classname="ProductsGetAllProducts"/>
+    <testcase name="Response under 500ms" time="0.435" classname="ProductsGetAllProducts"/>
+    <testcase name="Response has data array" time="0.435" classname="ProductsGetAllProducts"/>
+    <testcase name="Price is a number" time="0.435" classname="ProductsGetAllProducts"/>
+    <testcase name="Content-Type is JSON" time="0.435" classname="ProductsGetAllProducts"/>
+  </testsuite>
+  <testsuite name="Users / Register user" id="60a42924-3717-4ae4-a74b-e7e16572fd07" timestamp="2026-03-30T23:00:15.525Z" tests="7" failures="0" errors="0" time="0.623">
+    <testcase name="User registered successfully" time="0.623" classname="UsersRegisterUser"/>
+    <testcase name="Verify all fields are strings and not empty" time="0.623" classname="UsersRegisterUser"/>
+    <testcase name="Verify 'address' object and its children" time="0.623" classname="UsersRegisterUser"/>
+    <testcase name="Verify 'phone' contains only digits" time="0.623" classname="UsersRegisterUser"/>
+    <testcase name="Verify 'created_at' contains numbers (ignoring separators)" time="0.623" classname="UsersRegisterUser"/>
+    <testcase name="Response time under 1000ms" time="0.623" classname="UsersRegisterUser"/>
+    <testcase name="Content-Type is JSON" time="0.623" classname="UsersRegisterUser"/>
+  </testsuite>
+</testsuites>

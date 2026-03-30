@@ -1,0 +1,22 @@
+{
+  "name": "toolshop-api-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "postman collection run collections/toolshop-collection.json -e environments/toolshop-dev.json --reporters cli,htmlextra --reporter-htmlextra-export reports/report.html",
+    "test:bail": "postman collection run collections/toolshop-collection.json -e environments/toolshop-dev.json --bail",
+    "test:ci": "node scripts/inject-credentials.js && postman collection run collections/toolshop-collection.json -e environments/toolshop-ci.json --reporters cli,junit --reporter-junit-export reports/results.xml"  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axl611/toolshop-api-tests.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/axl611/toolshop-api-tests/issues"
+  },
+  "homepage": "https://github.com/axl611/toolshop-api-tests#readme"
+}

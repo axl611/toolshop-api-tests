@@ -22,13 +22,21 @@ jobs:
 
       - name: Install Newman and reporters
         run: |
-          npm install -g newman
-          npm install -g newman-reporter-htmlextra
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+          
 
       - name: Inject credentials into environment file
         run: |
-          sed -i 's/"adminEmail", "value": ""/"adminEmail", "value": "${{ secrets.ADMIN_EMAIL }}"/g' environments/toolshop-ci.json
-          sed -i 's/"adminPassword", "value": ""/"adminPassword", "value": "${{ secrets.ADMIN_PASSWORD }}"/g' environments/toolshop-ci.json
+           node scripts/inject-credentials.js
+        env:
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+
+
+      - name: Debug environment after injection
+        run: |
+          echo "---- ENV FILE ----"
+          cat environments/toolshop-ci.json
 
       - name: Run API tests
         run: npm run test:ci

@@ -1,0 +1,31 @@
+{
+  "id": "ci-environment",
+  "name": "Toolshop - CI",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.practicesoftwaretesting.com",
+      "enabled": true
+    },
+    {
+      "key": "adminEmail",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "adminPassword",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "responseTimeLimit",
+      "value": "3000",
+      "enabled": true
+    },
+    {
+      "key": "token",
+      "value": "",
+      "enabled": true
+    }
+  ]
+}
